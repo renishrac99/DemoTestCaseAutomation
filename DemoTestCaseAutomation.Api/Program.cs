@@ -33,11 +33,13 @@ using (var scope = app.Services.CreateScope())
 }
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// Enable Swagger UI so the backend can be inspected regardless of environment.
+app.UseSwagger();
+app.UseSwaggerUI(options =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "DemoTestCaseAutomation API v1");
+    // Keep the default route prefix ("swagger") so UI is available at /swagger
+});
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
