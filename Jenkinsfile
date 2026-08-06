@@ -1,11 +1,6 @@
 pipeline {
 
-    agent {
-        docker {
-            image 'mcr.microsoft.com/dotnet/sdk:9.0'
-            args '-v /var/run/docker.sock:/var/run/docker.sock'
-        }
-    }
+    agent any
 
     environment {
         IMAGE_NAME = "demotestcaseautomation"
@@ -20,10 +15,9 @@ pipeline {
             }
         }
 
-        stage('Check Environment') {
+        stage('Check Docker') {
             steps {
                 sh '''
-                    dotnet --version
                     docker --version
                 '''
             }
@@ -31,31 +25,54 @@ pipeline {
 
         stage('Restore') {
             steps {
-                sh 'dotnet restore'
+                sh '''
+                    docker run --rm \
+                    -v "$PWD:/src" \
+                    -w /src \
+                    mcr.microsoft.com/dotnet/sdk:9.0 \
+                    dotnet restore
+                '''
             }
         }
 
         stage('Build') {
             steps {
-                sh 'dotnet build --configuration Release --no-restore'
+                sh '''
+                    docker run --rm \
+                    -v "$PWD:/src" \
+                    -w /src \
+                    mcr.microsoft.com/dotnet/sdk:9.0 \
+                    dotnet build --configuration Release --no-restore
+                '''
             }
         }
 
         stage('Test') {
             steps {
-                sh 'dotnet test --configuration Release --no-build'
+                sh '''
+                    docker run --rm \
+                    -v "$PWD:/src" \
+                    -w /src \
+                    mcr.microsoft.com/dotnet/sdk:9.0 \
+                    dotnet test --configuration Release --no-build
+                '''
             }
         }
 
         stage('Publish') {
             steps {
                 sh '''
+                    docker run --rm \
+                    -v "$PWD:/src" \
+                    -w /src \
+                    mcr.microsoft.com/dotnet/sdk:9.0 \
                     dotnet publish \
                     --configuration Release \
                     -o publish
                 '''
             }
         }
+
 
         stage('Docker Build') {
             steps {
@@ -66,20 +83,23 @@ pipeline {
             }
         }
 
+
         stage('Deploy') {
             steps {
                 sh '''
                     docker stop ${CONTAINER_NAME} || true
                     docker rm ${CONTAINER_NAME} || true
 
+
                     docker run -d \
-                        --name ${CONTAINER_NAME} \
-                        -p 5000:80 \
-                        ${IMAGE_NAME}:latest
+                    --name ${CONTAINER_NAME} \
+                    -p 5000:8080 \
+                    ${IMAGE_NAME}:latest
                 '''
             }
         }
     }
+
 
     post {
 
