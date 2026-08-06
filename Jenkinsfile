@@ -17,43 +17,44 @@ pipeline {
 
         stage('Restore') {
             steps {
-                bat 'dotnet restore'
+                sh 'dotnet restore'
             }
         }
 
         stage('Build') {
             steps {
-                bat 'dotnet build --configuration Release --no-restore'
+                sh 'dotnet build --configuration Release --no-restore'
             }
         }
 
         stage('Test') {
             steps {
-                bat 'dotnet test --configuration Release --no-build'
+                sh 'dotnet test --configuration Release --no-build'
             }
         }
 
         stage('Publish') {
             steps {
-                bat 'dotnet publish --configuration Release -o publish'
+                sh 'dotnet publish --configuration Release -o publish'
             }
         }
 
         stage('Docker Build') {
             steps {
-                bat 'docker build -t demotestcaseautomation .'
+                sh 'docker build -t ${IMAGE_NAME}:latest .'
             }
         }
 
         stage('Deploy') {
             steps {
-                bat '''
-                docker stop demotestcaseautomation || exit 0
-                docker rm demotestcaseautomation || exit 0
-                docker run -d ^
-                    --name demotestcaseautomation ^
-                    -p 5000:80 ^
-                    demotestcaseautomation
+                sh '''
+                    docker stop ${CONTAINER_NAME} || true
+                    docker rm ${CONTAINER_NAME} || true
+
+                    docker run -d \
+                        --name ${CONTAINER_NAME} \
+                        -p 5000:80 \
+                        ${IMAGE_NAME}:latest
                 '''
             }
         }
@@ -61,11 +62,15 @@ pipeline {
 
     post {
         success {
-            echo 'Deployment Successful'
+            echo '✅ Deployment Successful'
         }
 
         failure {
-            echo 'Deployment Failed'
+            echo '❌ Deployment Failed'
+        }
+
+        always {
+            cleanWs()
         }
     }
 }
