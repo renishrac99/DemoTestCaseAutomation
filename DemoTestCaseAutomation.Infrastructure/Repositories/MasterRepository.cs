@@ -1,0 +1,31 @@
+using DemoTestCaseAutomation.Domain.Entities;
+using DemoTestCaseAutomation.Domain.Interfaces;
+using DemoTestCaseAutomation.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+
+namespace DemoTestCaseAutomation.Infrastructure.Repositories;
+
+public class MasterRepository : IMasterRepository
+{
+    private readonly AppDbContext _context;
+
+    public MasterRepository(AppDbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task<IEnumerable<City>> GetCitiesAsync()
+    {
+        return await _context.Cities.Include(c => c.State).ToListAsync();
+    }
+
+    public async Task<IEnumerable<City>> GetCitiesByStateIdAsync(int stateId)
+    {
+        return await _context.Cities.Include(c => c.State).Where(c => c.StateId == stateId).ToListAsync();
+    }
+
+    public async Task<IEnumerable<State>> GetStatesAsync()
+    {
+        return await _context.States.ToListAsync();
+    }
+}

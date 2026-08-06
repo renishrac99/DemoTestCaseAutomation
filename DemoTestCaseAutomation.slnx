@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="DemoTestCaseAutomation.Api/DemoTestCaseAutomation.Api.csproj" />
+  <Project Path="DemoTestCaseAutomation.Application/DemoTestCaseAutomation.Application.csproj" />
+  <Project Path="DemoTestCaseAutomation.Domain/DemoTestCaseAutomation.Domain.csproj" />
+  <Project Path="DemoTestCaseAutomation.Infrastructure/DemoTestCaseAutomation.Infrastructure.csproj" />
+  <Project Path="DemoTestCaseAutomation.Tests/DemoTestCaseAutomation.Tests.csproj" />
+</Solution>
