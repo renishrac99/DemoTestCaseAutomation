@@ -1,6 +1,11 @@
 pipeline {
 
-    agent any
+    agent {
+        docker {
+            image 'mcr.microsoft.com/dotnet/sdk:9.0'
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
+        }
+    }
 
     environment {
         IMAGE_NAME = "demotestcaseautomation"
@@ -12,6 +17,15 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
+            }
+        }
+
+        stage('Check Environment') {
+            steps {
+                sh '''
+                    dotnet --version
+                    docker --version
+                '''
             }
         }
 
@@ -35,13 +49,20 @@ pipeline {
 
         stage('Publish') {
             steps {
-                sh 'dotnet publish --configuration Release -o publish'
+                sh '''
+                    dotnet publish \
+                    --configuration Release \
+                    -o publish
+                '''
             }
         }
 
         stage('Docker Build') {
             steps {
-                sh 'docker build -t ${IMAGE_NAME}:latest .'
+                sh '''
+                    docker build \
+                    -t ${IMAGE_NAME}:latest .
+                '''
             }
         }
 
@@ -61,6 +82,7 @@ pipeline {
     }
 
     post {
+
         success {
             echo '✅ Deployment Successful'
         }
