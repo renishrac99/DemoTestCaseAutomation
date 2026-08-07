@@ -41,4 +41,11 @@ public class MasterController : ControllerBase
         var zipCodes = await _masterService.GetZipCodesByCityIdAsync(cityId);
         return Ok(zipCodes);
     }
+
+    [HttpGet("timezones")]
+    public async Task<ActionResult<IEnumerable<TimeZoneDto>>> GetTimeZones()
+    {
+        var timeZones = await _masterService.GetTimeZonesAsync();
+        return Ok(timeZones);
+    }
 }

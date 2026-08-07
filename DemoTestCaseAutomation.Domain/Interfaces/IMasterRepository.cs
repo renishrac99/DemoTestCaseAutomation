@@ -8,4 +8,5 @@ public interface IMasterRepository
     Task<IEnumerable<City>> GetCitiesAsync();
     Task<IEnumerable<City>> GetCitiesByStateIdAsync(int stateId);
     Task<IEnumerable<ZipCode>> GetZipCodesByCityIdAsync(int cityId);
+    Task<IEnumerable<TimeZone>> GetTimeZonesAsync();
 }

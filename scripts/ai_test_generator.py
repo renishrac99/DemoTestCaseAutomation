@@ -27,7 +27,7 @@ def main():
         sys.exit(0)
 
     print("Analyzing diff with Gemini...")
-    model = genai.GenerativeModel('gemini-1.5-pro')
+    model = genai.GenerativeModel('gemini-1.5-pro-latest')
     
     prompt = f"""
     You are an expert .NET C# developer and SDET. 

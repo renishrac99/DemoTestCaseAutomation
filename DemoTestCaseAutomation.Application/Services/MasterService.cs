@@ -55,4 +55,15 @@ public class MasterService : IMasterService
             CityId = z.CityId
         });
     }
+
+    public async Task<IEnumerable<TimeZoneDto>> GetTimeZonesAsync()
+    {
+        var timeZones = await _masterRepository.GetTimeZonesAsync();
+        return timeZones.Select(t => new TimeZoneDto
+        {
+            Id = t.Id,
+            Name = t.Name,
+            Offset = t.Offset
+        });
+    }
 }
