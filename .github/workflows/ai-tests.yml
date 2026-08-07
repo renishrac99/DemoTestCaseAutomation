@@ -1,0 +1,56 @@
+name: AI Test Generation
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  generate-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2 # Need at least 2 commits to get the diff
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: |
+          pip install -r scripts/requirements.txt
+
+      - name: Generate AI Tests
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python scripts/ai_test_generator.py
+
+      - name: Check for Test Changes
+        id: check_changes
+        run: |
+          if [[ -n $(git status --porcelain) ]]; then
+            echo "changes_found=true" >> $GITHUB_OUTPUT
+          else
+            echo "changes_found=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Pull Request
+        if: steps.check_changes.outputs.changes_found == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "test: auto-generated AI tests for recent changes"
+          title: "🤖 Auto-Generated Test Cases"
+          body: |
+            This PR contains automatically generated test cases from the Gemini AI based on recent pushes to this branch.
+            
+            Please review the test cases for correctness and coverage before merging.
+          branch: "auto-ai-tests-${{ github.run_id }}"
+          base: ${{ github.ref_name }}
+          labels: "ai, tests"
