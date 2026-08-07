@@ -28,4 +28,9 @@ public class MasterRepository : IMasterRepository
     {
         return await _context.States.ToListAsync();
     }
+
+    public async Task<IEnumerable<ZipCode>> GetZipCodesByCityIdAsync(int cityId)
+    {
+        return await _context.ZipCodes.Where(z => z.CityId == cityId).ToListAsync();
+    }
 }

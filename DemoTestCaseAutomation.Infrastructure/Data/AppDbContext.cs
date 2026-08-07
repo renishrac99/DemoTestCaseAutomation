@@ -14,6 +14,7 @@ public class AppDbContext : DbContext
     public DbSet<User> Users { get; set; } = null!;
     public DbSet<State> States { get; set; } = null!;
     public DbSet<City> Cities { get; set; } = null!;
+    public DbSet<ZipCode> ZipCodes { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -30,6 +31,13 @@ public class AppDbContext : DbContext
             new City { Id = 2, Name = "San Francisco", StateId = 1 },
             new City { Id = 3, Name = "Houston", StateId = 2 },
             new City { Id = 4, Name = "Austin", StateId = 2 }
+        );
+
+        modelBuilder.Entity<ZipCode>().HasData(
+            new ZipCode { Id = 1, Code = "90001", CityId = 1 },
+            new ZipCode { Id = 2, Code = "94101", CityId = 2 },
+            new ZipCode { Id = 3, Code = "77001", CityId = 3 },
+            new ZipCode { Id = 4, Code = "73301", CityId = 4 }
         );
     }
 }

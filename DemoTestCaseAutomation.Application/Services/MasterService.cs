@@ -44,4 +44,15 @@ public class MasterService : IMasterService
             Name = s.Name
         });
     }
+
+    public async Task<IEnumerable<ZipCodeDto>> GetZipCodesByCityIdAsync(int cityId)
+    {
+        var zipCodes = await _masterRepository.GetZipCodesByCityIdAsync(cityId);
+        return zipCodes.Select(z => new ZipCodeDto
+        {
+            Id = z.Id,
+            Code = z.Code,
+            CityId = z.CityId
+        });
+    }
 }

@@ -35,4 +35,10 @@ public class MasterController : ControllerBase
         var cities = await _masterService.GetCitiesByStateIdAsync(stateId);
         return Ok(cities);
     }
+    [HttpGet("zipcodes/bycity/{cityId}")]
+    public async Task<ActionResult<IEnumerable<ZipCodeDto>>> GetZipCodesByCity(int cityId)
+    {
+        var zipCodes = await _masterService.GetZipCodesByCityIdAsync(cityId);
+        return Ok(zipCodes);
+    }
 }
