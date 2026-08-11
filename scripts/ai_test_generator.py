@@ -48,7 +48,7 @@ def main():
     """
 
     try:
-        response = model.generate_content(prompt)
+        response = model.generate_content(prompt, request_options={"timeout": 600})
         output = response.text
     except Exception as e:
         print(f"Error calling Gemini API: {e}")
