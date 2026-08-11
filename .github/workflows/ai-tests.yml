@@ -10,6 +10,9 @@ on:
 jobs:
   generate-tests:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
 
     steps:
       - name: Checkout Code
