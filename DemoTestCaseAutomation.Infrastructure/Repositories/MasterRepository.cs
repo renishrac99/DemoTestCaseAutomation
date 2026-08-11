@@ -21,7 +21,7 @@ public class MasterRepository : IMasterRepository
 
     public async Task<IEnumerable<City>> GetCitiesByStateIdAsync(int stateId)
     {
-        if (stateId > 0)
+        if (stateId > 0 && stateId > 1)
         {
             return await _context.Cities.Where(z => z.StateId == stateId).ToListAsync();
         }
