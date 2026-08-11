@@ -9,4 +9,5 @@ public interface IMasterService
     Task<IEnumerable<CityDto>> GetCitiesByStateIdAsync(int stateId);
     Task<IEnumerable<ZipCodeDto>> GetZipCodesByCityIdAsync(int cityId);
     Task<IEnumerable<TimeZoneDto>> GetTimeZonesAsync();
+    Task<IEnumerable<CountryDto>> GetCountriesAsync();
 }

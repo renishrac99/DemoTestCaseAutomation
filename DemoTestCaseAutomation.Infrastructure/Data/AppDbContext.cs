@@ -1,6 +1,7 @@
 using DemoTestCaseAutomation.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.CodeAnalysis;
+using TimeZone = DemoTestCaseAutomation.Domain.Entities.TimeZone;
 
 namespace DemoTestCaseAutomation.Infrastructure.Data;
 
@@ -15,7 +16,8 @@ public class AppDbContext : DbContext
     public DbSet<State> States { get; set; } = null!;
     public DbSet<City> Cities { get; set; } = null!;
     public DbSet<ZipCode> ZipCodes { get; set; } = null!;
-    public DbSet<TimeZone> TimeZones { get; set; } = null!;
+    public DbSet<Domain.Entities.TimeZone> TimeZones { get; set; } = null!;
+    public DbSet<Country> Countries { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -45,6 +47,12 @@ public class AppDbContext : DbContext
             new TimeZone { Id = 1, Name = "Pacific Standard Time", Offset = "-08:00" },
             new TimeZone { Id = 2, Name = "Central Standard Time", Offset = "-06:00" },
             new TimeZone { Id = 3, Name = "Eastern Standard Time", Offset = "-05:00" }
+        );
+
+        modelBuilder.Entity<Country>().HasData(
+            new Country { Id = 1, Name = "United States", Code = "US" },
+            new Country { Id = 2, Name = "Canada", Code = "CA" },
+            new Country { Id = 3, Name = "United Kingdom", Code = "UK" }
         );
     }
 }

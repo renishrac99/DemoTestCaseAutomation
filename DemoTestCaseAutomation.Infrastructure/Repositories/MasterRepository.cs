@@ -34,8 +34,13 @@ public class MasterRepository : IMasterRepository
         return await _context.ZipCodes.Where(z => z.CityId == cityId).ToListAsync();
     }
 
-    public async Task<IEnumerable<TimeZone>> GetTimeZonesAsync()
+    public async Task<IEnumerable<Domain.Entities.TimeZone>> GetTimeZonesAsync()
     {
         return await _context.TimeZones.ToListAsync();
+    }
+
+    public async Task<IEnumerable<Country>> GetCountriesAsync()
+    {
+        return await _context.Countries.ToListAsync();
     }
 }

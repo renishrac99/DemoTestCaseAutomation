@@ -48,4 +48,11 @@ public class MasterController : ControllerBase
         var timeZones = await _masterService.GetTimeZonesAsync();
         return Ok(timeZones);
     }
+
+    [HttpGet("countries")]
+    public async Task<ActionResult<IEnumerable<CountryDto>>> GetCountries()
+    {
+        var countries = await _masterService.GetCountriesAsync();
+        return Ok(countries);
+    }
 }

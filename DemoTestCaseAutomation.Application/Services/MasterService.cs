@@ -66,4 +66,15 @@ public class MasterService : IMasterService
             Offset = t.Offset
         });
     }
+
+    public async Task<IEnumerable<CountryDto>> GetCountriesAsync()
+    {
+        var countries = await _masterRepository.GetCountriesAsync();
+        return countries.Select(c => new CountryDto
+        {
+            Id = c.Id,
+            Name = c.Name,
+            Code = c.Code
+        });
+    }
 }
