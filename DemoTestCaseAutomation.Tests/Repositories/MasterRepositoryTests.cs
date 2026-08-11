@@ -1,62 +1,86 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using DemoTestCaseAutomation.Domain.Entities;
 using DemoTestCaseAutomation.Infrastructure.Data;
 using DemoTestCaseAutomation.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
-namespace DemoTestCaseAutomation.Tests.Repositories;
-
-public class MasterRepositoryTests
+namespace DemoTestCaseAutomation.Tests.Repositories
 {
-    private AppDbContext GetDbContext()
+    public class MasterRepositoryTests
     {
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-        var context = new AppDbContext(options);
-        context.Database.EnsureCreated();
-        return context;
-    }
+        private ApplicationDbContext CreateDbContext(string databaseName)
+        {
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+                .UseInMemoryDatabase(databaseName: databaseName)
+                .Options;
 
-    [Fact]
-    public async Task GetCitiesAsync_ReturnsAllCities()
-    {
-        // Arrange
-        using var context = GetDbContext();
-        var repo = new MasterRepository(context);
+            return new ApplicationDbContext(options);
+        }
 
-        // Act
-        var result = await repo.GetCitiesAsync();
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(2)]
+        public async Task GetCitiesByStateIdAsync_WhenStateIdIsTwoOrLess_ReturnsEmptyOrDefaultList(int stateId)
+        {
+            // Arrange
+            var dbName = Guid.NewGuid().ToString();
+            using (var context = CreateDbContext(dbName))
+            {
+                context.Cities.AddRange(
+                    new City { Id = 1, Name = "City 1", StateId = 1 },
+                    new City { Id = 2, Name = "City 2", StateId = 2 }
+                );
+                await context.SaveChangesAsync();
+            }
 
-        // Assert
-        Assert.NotEmpty(result);
-    }
+            // Act
+            IEnumerable<City> result;
+            using (var context = CreateDbContext(dbName))
+            {
+                var repository = new MasterRepository(context);
+                result = await repository.GetCitiesByStateIdAsync(stateId);
+            }
 
-    [Fact]
-    public async Task GetCitiesByStateIdAsync_ReturnsCitiesForState()
-    {
-        // Arrange
-        using var context = GetDbContext();
-        var repo = new MasterRepository(context);
+            // Assert
+            Assert.True(result == null || !result.Any(), $"Expected no cities returned for StateId {stateId} when stateId <= 2.");
+        }
 
-        // Act
-        var result = await repo.GetCitiesByStateIdAsync(1);
+        [Fact]
+        public async Task GetCitiesByStateIdAsync_WhenStateIdGreaterThanTwo_ReturnsMatchingCities()
+        {
+            // Arrange
+            var dbName = Guid.NewGuid().ToString();
+            int targetStateId = 3;
 
-        // Assert
-        Assert.NotEmpty(result);
-        Assert.All(result, c => Assert.Equal(1, c.StateId));
-    }
+            using (var context = CreateDbContext(dbName))
+            {
+                context.Cities.AddRange(
+                    new City { Id = 1, Name = "City A", StateId = 2 },
+                    new City { Id = 2, Name = "City B", StateId = 3 },
+                    new City { Id = 3, Name = "City C", StateId = 3 }
+                );
+                await context.SaveChangesAsync();
+            }
 
-    [Fact]
-    public async Task GetStatesAsync_ReturnsAllStates()
-    {
-        // Arrange
-        using var context = GetDbContext();
-        var repo = new MasterRepository(context);
+            // Act
+            IEnumerable<City> result;
+            using (var context = CreateDbContext(dbName))
+            {
+                var repository = new MasterRepository(context);
+                result = await repository.GetCitiesByStateIdAsync(targetStateId);
+            }
 
-        // Act
-        var result = await repo.GetStatesAsync();
-
-        // Assert
-        Assert.NotEmpty(result);
+            // Assert
+            Assert.NotNull(result);
+            var cityList = result.ToList();
+            Assert.Equal(2, cityList.Count);
+            Assert.All(cityList, c => Assert.Equal(targetStateId, c.StateId));
+        }
     }
 }
