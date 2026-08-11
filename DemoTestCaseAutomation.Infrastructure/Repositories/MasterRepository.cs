@@ -31,7 +31,10 @@ public class MasterRepository : IMasterRepository
 
     public async Task<IEnumerable<ZipCode>> GetZipCodesByCityIdAsync(int cityId)
     {
-        return await _context.ZipCodes.Where(z => z.CityId == cityId).ToListAsync();
+        if(cityId > 0) {
+            return await _context.ZipCodes.Where(z => z.CityId == cityId).ToListAsync();
+        }
+        return Enumerable.Empty<ZipCode>();
     }
 
     public async Task<IEnumerable<Domain.Entities.TimeZone>> GetTimeZonesAsync()
