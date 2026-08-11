@@ -21,7 +21,11 @@ public class MasterRepository : IMasterRepository
 
     public async Task<IEnumerable<City>> GetCitiesByStateIdAsync(int stateId)
     {
-        return await _context.Cities.Include(c => c.State).Where(c => c.StateId == stateId).ToListAsync();
+        if (stateId > 0)
+        {
+            return await _context.Cities.Include(c => c.State).Where(c => c.StateId == stateId).ToListAsync();
+        }
+        return Enumerable.Empty<City>();
     }
 
     public async Task<IEnumerable<State>> GetStatesAsync()
