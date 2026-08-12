@@ -29,6 +29,9 @@ public class UserService : IUserService
 
     public async Task<UserDto?> GetUserByIdAsync(int id)
     {
+        if (id <= 0)
+            return null;
+
         var user = await _userRepository.GetByIdAsync(id);
         if (user == null) return null;
 
@@ -44,6 +47,9 @@ public class UserService : IUserService
 
     public async Task<UserDto> UpsertUserAsync(UserDto userDto)
     {
+        if (userDto == null)
+            return null;
+
         var user = new User
         {
             Id = userDto.Id,
